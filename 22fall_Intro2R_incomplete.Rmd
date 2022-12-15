@@ -1,0 +1,227 @@
+---
+title: "Intro2R Workshop 2022 Fall"
+author: "Bin Chen"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    number_sections: False
+    df_print: paged
+    theme: cosmo
+---
+
+Welcome to the "Introduction To R" workshop! This workshop is for scholars who are interested in data analysis and visualization with R. In this workshop, we will talk about (1) what is R and RStudio, (2) R basics before diving into coding such as working directory, file path, function, package, and import/export etc. and (3) data classes and structures in R.
+
+Recommended Materials:
+
+* An Intro to R: https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf
+* R for Data Science: https://r4ds.had.co.nz/introduction.html
+
+# R and RStudio
+
+*R* is a programming language for statistical computing and graphics.
+
+*RStudio* is an integrated development environment for R and Python. RStudio combines a source code editor, build automation tools and a debugger.
+
+## R vs Python
+
+*R*: Statistical computing and graphics.
+
+*Python*: Machine learning, deep learning, etc. 
+
+Both languages have a lot in common and can do most common tasks.
+
+## R for J&M scholars
+
+*Statistics*: Fast, Flexible, Visualization. 
+
+*Collect Data*: Scraping webpages, Using API.
+
+*Network Analysis*: Descriptive (e.g., igraph), Inference (e.g., ergm)
+
+*Text Analysis*: Classification (e.g., Topic Modeling), Semantic Network 
+
+## Walkthrough R Studio
+
+Install R: https://www.r-project.org/
+
+Install RStudio: https://www.rstudio.com/products/rstudio/download/
+
+RStudio window: *Console*, *Environment*, *Files*.
+
+## R Projects and RMD
+
+Use *RProject* folder to manage different projects. Starting from R project to access your codes and data is a good habit, and it also makes your life way easier! (e.g., wd issues)
+
+*RMarkdown* is a file format for making dynamic documents with R (HTML, PDF, PPT, etc.)
+
+Let's create a new R project and an RMD file.
+
+# WD (Working Directory) and Path
+
+## Get current WD
+```{r }
+getwd()
+```
+
+Notice the reverse "/" from Windows path:
+
+Windows Path: "C:\Users\chenb\OneDrive - The University of Texas at Austin\Documents\R\22fall_intro2r_workshop"
+
+
+## Set a different WD
+
+Suppose you want to access a file stored under "/data" and now you want to change your WD.
+
+```{r warning=FALSE}
+setwd()
+
+getwd()
+```
+
+Note: You don't do this in practice because you can just specify the path of file (current WD will be your start point). 
+Tips: Use interface to (re)set WD.
+
+# Package and Function
+
+R packages are extensions to the R statistical programming language.
+
+## Install a package
+
+```{r eval=FALSE}
+install.packages("praise")
+```
+## Load a package
+```{r}
+library()
+require()
+```
+
+Use ? + command/package name to get help, e.g., `r ?praise`
+
+```{r }
+?praise
+```
+
+Take a try
+```{r}
+
+```
+One more
+```{r}
+
+```
+
+# Data Types and Structure
+
+## Date Types
+
+### Numeric and Integer
+
+```{r}
+x <- 
+class(x) # you can also check [environment] to see types of objects
+```
+
+```{r}
+y =  # "<-" and "=" are same
+class(y)
+```
+
+Note. sometimes you see "double" in R, which is basically same as "numeric"
+
+Create a vector
+```{r}
+z <- 
+```
+
+### Character and Factor
+
+```{r}
+a <- 
+class(a)
+```
+
+```{r}
+b <- 
+class(b)
+```
+
+```{r}
+c <- 
+class(c)
+```
+
+Sometimes we want to convert character to factor
+
+```{r}
+c1 <- 
+class(c1)
+```
+
+Then you can use `r levels(c1)` to obtain factor levels 
+```{r}
+
+```
+
+### Date
+
+```{r}
+d0 <- 
+class(d0)
+```
+
+```{r}
+d1 <- as.Date()
+class(d1)
+```
+
+```{r}
+d <- c("09/20/2022", "09/21/2022", "09/22/2022", "09/24/2022", "09/20/2022")
+```
+
+### Logical Data
+
+```{r}
+L = 
+class(L)
+```
+
+```{r}
+L1 = 
+class(L1)
+```
+
+```{r}
+L == L1 #you use "==" for equal to, rather than "="
+```
+
+## Data Structure
+
+### List
+```{r}
+mix <- list() 
+class(mix)
+```
+
+### Dataframe
+```{r}
+df <- data.frame(z, c, d1)
+```
+
+```{r}
+df
+```
+# Useful links
+
+* https://www.google.com/
+* https://stackoverflow.com/
+* https://www.reddit.com/r/RStudio/
+
+```{r}
+praise()
+```
+
+
+
