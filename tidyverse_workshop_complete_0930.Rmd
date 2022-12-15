@@ -1,0 +1,367 @@
+---
+title: "Intro to Tidyverse Workshop"
+author: "Bin Chen"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+  word_document:
+    toc: yes
+---
+Welcome to the "Introduction to Tidyverse" workshop! This is the second training of the two sequence R workshop this fall. In this training, we will (1) review key concepts from the first training (e.g., working directory, data types and structures); (2) use most common commands about the R package `tidyverse`; and (3) walk through a standard data analysis flow by using the `tidyverse` package and knit `.RMD` file to a `HTML` file.  
+
+For working directory issues, please follow the instructions to set your Rstudio:
+
+- Click "Tools" in Rstudio, and click "Global Options" from the option lists. 
+- Click "R Markdown" from the pop-up window "Options". 
+- Look for "Evaluate chunks in directory"   
+- Change the default option "Document" to "Project"
+
+Then do the followings: 
+- Create a new R project, and three folders `data`, `R`, and `output`. 
+- Place the input data file `gamesale.csv` in the `data` subfolder.
+- Place the RMD file `tidyverse_workshop_incomplete.csv` in the `R` subfolder.
+
+The dataset `gamesale.csv` includes the world-wide sales data of video games. The description of the variables included in the data file is as follows: 
+
+- `Rank` - Ranking of overall sales
+- `Name` - Video game names
+- `Platform` - Platform of the games release (i.e. PC,PS4, etc.)
+- `Year` - Year of the game's release
+- `dual_sim` - Has dual sim support or not
+- `Genre` - Genre of the game
+- `Publisher` - Publisher of the game
+- `NA_Sales` - Sales in North America(in millions)
+- `EU_Sales` - Sales in Europe(in millions)
+- `JP_Sales` - Sales in Japan(in millions)
+- `Other_Sales` - Sales in other areas of the world(in millions)
+- `Global_Sales` - Total worldwide sales(in millions)
+
+For more information, you could refer to this webpage [https://www.kaggle.com/gregorut/videogamesales], from which the dataset was downloaded. 
+
+Credit to Dr. Seung Choi for introducing this dataset. 
+
+
+# What is `tidyverse`?
+
+The tidyverse is a collection of R packages designed for data science.
+
+A list of packages that we used most but not all
+
+*   `readr`
+*   `dplyr`
+*   `tidyr`
+*   `stringr`
+*   `ggplot2`
+
+For more information, visit [https://www.tidyverse.org/packages/]
+
+# R Data Analysis Workflow 
+
+## Import Data
+
+*   base R or `readr`: for flat files (e.g., `.csv`)
+*   `jsonlite` package for JSON data
+*   `haven` package for SPSS, STATA, and SAS data
+
+## Data Wrangling 
+
+*   `tidyr`
+*   `dplyr`
+*   `lubridate` for dates and date-times data
+
+## Data Visualization 
+
+Normally, you will want to do some statistical modeling or other analysis after data cleaning and wrangling. But we will not discuss it here.
+
+*   `ggplot2`
+
+
+# Preparation
+
+## Install the package 
+
+Run `install.packages("tidyverse")` in console. Because you only need to install it for once.
+Run `library(tidyverse)` to load the package
+
+```{r}
+library(tidyverse)
+```
+
+## Forward pipe operator `%>%`
+
+The infix operator `%>%` is not part of base R, but is in fact defined by the package `magrittr` and is heavily used by `dplyr`.
+
+```{r}
+x <- c("high", "low", "high")
+```
+
+```{r}
+x1 <- as.factor(x)
+```
+
+```{r}
+x2 <- x %>%
+  as.factor() 
+```
+
+```{r}
+x1 == x2 
+```
+
+# Commands
+
+You may need to use hundreds of commands in a single task or when dealing with different types of data. Here we will only talk about the mostly used ones in standard scenarios. 
+
+## Import data `read_csv`
+
+```{r}
+df <- read_csv("data/gamesale.csv", na = "N/A")
+```
+
+base R command: `read.csv`
+
+```{r}
+df0 <- read.csv("data/gamesale.csv")
+```
+
+You may not see any differences between these two but the differences exist. One point is `read_csv` is significantly faster for large .csv files. 
+
+There are many options to specify when import data into R (e.g., missing value)
+
+## Check Missing Value
+
+Check NA in the whole data frame use `sum()` and `is.na()`
+
+```{r}
+sum(is.na(df))
+```
+
+Check NA by column 
+```{r}
+sum(is.na(df$Year))
+```
+
+## Convert data type 
+
+* `as.numeric()`
+* `as.factor()`
+* `as.character()`
+
+What is the data type of the column `Year`
+
+```{r}
+class(df$Year)
+```
+
+We want to convert it to a `integer`
+
+```{r}
+df$Year <- as.integer(df$Year)
+```
+
+```{r}
+class(df$Year)
+```
+Note: Although we did not do it here - it is always a good habit to create a new column whenever you want to manipulate original data.
+
+## Create a new column `mutate`
+
+Lets convert `Platform`, `Genre`, and `Publisher` to `factor` data and create three new columns named `Platform_f`, `Genre_f`, and `Publisher_f`.
+
+hint: use `as.factor`
+
+```{r}
+df1 <- df %>%
+  mutate("Platform_f" = as.factor(Platform),
+         "Genre_f" = as.factor(Genre),
+         "Publisher_f" = as.factor(Publisher)
+         )
+```
+
+Lets check
+```{r}
+class(df1$Genre_f)
+```
+
+Note. You can use `across()` and `is.charater` to do this more efficiently. 
+
+```{r}
+df<- df %>%
+  mutate(across(where(is.character), as.factor))
+```
+
+
+## Select columns `select()`
+
+Suppose we are only interested in three columns: `Rank`, `Name`, and `Global_sales`
+
+```{r}
+df2 <- df %>%
+  select (Rank, Name, Global_Sales)
+```
+
+Lets check 
+```{r}
+colnames(df2)
+```
+
+## Subset rows with `subset()`
+
+To subset certain rows, you need specify rules. 
+
+Suppose we want to subset top 50 most popular games. 
+
+```{r}
+df3 <- df %>%
+  subset (Rank <= 50)
+```
+
+What if we have multiple conditions? (use `&` and "|")
+
+e.g., Top 50 games on PC 
+
+```{r}
+df4 <- df %>%
+  subset(Rank <= 50 & Platform == "PC")
+```
+
+```{r}
+levels(df$Platform)
+```
+
+
+What if we want subset `Platform` is "PC", "PS3", "Wii", "X360"?
+
+Use `%in%` to identify if an element (e.g., a number) belongs to a vector or dataframe
+
+```{r}
+df5 <- df %>%
+  subset(Platform %in% c("PC", "PS3", "Wii", "X360"))
+```
+
+```{r}
+unique(df5$Platform)
+```
+
+
+### Subset rows with `filter`
+
+Note. `subset()` and `filter()` do same things but `filter()` is faster when data size is large. For more discussions visit [https://stackoverflow.com/questions/39882463/difference-between-subset-and-filter-from-dplyr]
+
+
+## `group_by`
+
+Use `group_by` and `count ()`to list number of games for each `Genre`
+
+```{r}
+df %>%
+  group_by(Genre) %>%
+  count()
+```
+
+Suppose we want to Compare mean value of `Global_sales` by `Genre`
+hint: `summarise`
+
+```{r}
+df %>%
+  group_by(Genre) %>%
+  summarise(sale = mean(Global_Sales))
+```
+
+Lets reorder the table above by `sale` from high to low 
+
+```{r}
+df %>%
+  group_by(Genre) %>%
+  summarise(sale = mean(Global_Sales)) %>%
+  arrange(-sale) # notice the negative sign here
+```
+
+## Visualization `ggplot2`
+
+Suppose we want to plot the global sales by game genres
+
+`ggplot()`
+`aes()`
+`geom_bar`: `stat=`
+
+Note. To add more layers to a plot, you use `+` rather than `%>%`
+
+```{r}
+df %>%
+  ggplot(aes(x = Genre, y = Global_Sales)) + # note "+" not "%>%"
+  geom_bar(stat='identity') # 'identity' means y value is y = global_sales
+```
+
+Lets make this plot more informational and prettier by adding title, axis lable, and set a theme style
+
+```{r}
+df %>%
+  ggplot(aes(x = Genre, y = Global_Sales)) + 
+  geom_bar(stat='identity') +
+  ggtitle("Video Game Global Sales by Genre") + # title
+  ylab ("Global Sale (Million)") + # ylab 
+  theme_minimal() # theme
+```
+
+# Gamesale data showcase
+
+## Load packages
+
+Besides of `tidyverse`, we will use two more packages here
+
+`skimr`: provides a strong set of summary statistics.
+`kableExtra`: generates tables (upgrade base R `kable`)
+
+You should see the warning upon opening this RMD file of installing packages.
+If you didn't do it, use `install.package()` to install packages.
+
+```{r message = FALSE}
+library(kableExtra) # use for table
+```
+
+## Generate a table 
+```{r}
+df %>%
+  subset(Platform %in% c("PS3", "X360", "Wii", "PC")) %>%
+  group_by(Platform) %>%
+  summarise(mean_sale_Global = mean(Global_Sales),
+            sd_sale_Global = sd(Global_Sales),
+            max_sale_Global = max(Global_Sales),
+            min_sale_Global = min(Global_Sales)) %>%
+  arrange(-mean_sale_Global) %>%
+  kable(caption = "Table of Sales of Video Games by Platforms") %>%
+  kable_classic(full_width = FALSE, html_font = "Arial")
+```
+
+## Generate a Plot
+
+Note. You can use `unique()` to check unique values of a column
+```{r}
+unique(df$Genre)
+```
+
+```{r}
+df %>%
+  filter(Platform %in% c("PS4", "X360", "Wii", "PC")) %>%
+  filter(Genre %in% c("Sports", "Role-Playing", "Shooter", "Action")) %>%
+  ggplot(aes(fill=Platform, y=Global_Sales, x=Platform)) + 
+  geom_bar(position="dodge", stat="identity") +
+  theme_minimal() +
+  facet_wrap(~Genre) + # present multiple plots
+  theme(legend.position="none") +
+  xlab("") +
+  ylab("Global Sales (million)")
+```
+
+
+
+
+
+
+
+
