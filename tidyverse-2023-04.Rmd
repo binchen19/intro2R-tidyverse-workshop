@@ -1,0 +1,126 @@
+---
+title: "Introduction to Tidyverse Workshop"
+author: "Bin Chen"
+date: "2023-04-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## 1. Introduction to the tidyverse
+The tidyverse is a collection of R packages designed for data science. The core packages in the tidyverse include 'ggplot2', 'dplyr', 'tidyr', 'readr', and more. These packages are designed to work together and make data manipulation and visualization easier and more efficient. In this workshop, we'll introduce you to some of the key concepts and techniques in the tidyverse.
+
+```{r}
+# Load required libraries
+library(tidyverse)
+# Load sample dataset
+data(mpg)
+```
+
+## 2. Data wrangling with dplyr
+Dplyr is a powerful package for data manipulation in R. It provides a set of functions that allow you to perform common data manipulation tasks with a clear and concise syntax.
+
+### a. Selecting columns using select()
+
+```{r}
+mpg_select <- mpg %>%
+  select(manufacturer, model, year, cty, hwy)
+```
+
+### b. Filtering rows using filter()
+
+```{r}
+mpg_filter <- mpg %>%
+  filter(year == 2008, cty > 20)
+```
+
+### c. Arranging rows using arrange()
+
+```{r}
+mpg_arrange <- mpg %>%
+  arrange(desc(hwy), cty)
+```
+  
+
+### d. Creating new columns using mutate()
+```{r}
+mpg_mutate <- mpg %>%
+  mutate(average_mileage = (cty + hwy) / 2)
+```
+
+### e. Summarizing data using summarize()
+
+```{r}
+mpg_summarize <- mpg %>%
+  group_by(manufacturer, year) %>%
+  summarize(avg_cty = mean(cty), avg_hwy = mean(hwy))
+```
+
+## 3. Data reshaping with tidyr
+
+### a. Gathering columns using pivot_longer()
+
+```{r}
+mpg_long <- mpg %>%
+  select(manufacturer, model, year, cty, hwy) %>%
+  pivot_longer(cols = c(cty, hwy), names_to = "mileage_type", values_to = "mileage")
+```
+
+### b. Spreading columns using pivot_wider()
+
+```{r}
+mpg_wide <- mpg_long %>%
+  pivot_wider(names_from = mileage_type, values_from = mileage)
+```
+  
+
+## 4. Data visualization with ggplot2
+
+### a. Basic scatter plot
+
+```{r}
+mpg_scatter <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point()
+```
+  
+### b. Scatter plot with color aesthetic
+
+```{r}
+mpg_scatter_color <- ggplot(mpg, aes(x = displ, y = hwy, color = class)) +
+  geom_point()
+```
+
+### c. Scatter plot with faceting
+
+```{r}
+mpg_scatter_facet <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  facet_wrap(~class)
+```
+
+## d. Bar plot
+
+```{r}
+mpg_bar <- ggplot(mpg, aes(x = manufacturer)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### e. Customizing plots (colors, theme, etc.)
+
+```{r}
+mpg_scatter_custom <- ggplot(mpg, aes(x = displ, y = hwy, color = class)) +
+  geom_point() +
+  labs(title = "Engine Displacement vs. Highway Mileage",
+       x = "Engine Displacement, in Liters",
+       y = "Highway Mileage, in mpg") +
+  theme_minimal()
+```
+
+
+## 5. Conclusion
+
+Wrap up the workshop by summarizing key points and encouraging participants to practice and explore the tidyverse further.
